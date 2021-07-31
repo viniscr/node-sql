@@ -1,29 +1,32 @@
-const { Op } = require('sequelize');
+const { Op } = require("sequelize");
 const User = require("../models/User");
 
 module.exports = {
-    async show(req, res) {
-        const users = await User.findAll({
-            attributes: ['name', 'email'],
-            where: {
-                email: {
-                    [Op.iLike]: '%gmail.com'
-                }
+  async show(req, res) {
+    const users = await User.findAll({
+      attributes: ["name", "email"],
+      where: {
+        email: {
+          [Op.iLike]: "%gmail.com",
+        },
+      },
+      include: [
+        {
+          association: "addresses",
+          where: { street: "Rua Academico Reinaldo Consoni" },
+        },
+        {
+          association: "techs",
+          required: false,
+          where: {
+            name: {
+              [Op.iLike]: "React%",
             },
-            include: [
-                { association: 'addresses', where: { street: 'Rua Academico Reinaldo Consoni' } },
-                {
-                    association: 'techs',
-                    required: false,
-                    where: {
-                        name: {
-                            [Op.iLike]: 'React%'
-                        }
-                    }
-                }
-            ]
-        })
-        
-        return res.json(users);
-    }
-}
+          },
+        },
+      ],
+    });
+
+    return res.json(users);
+  },
+};
